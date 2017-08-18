@@ -49,7 +49,7 @@ class Thread2 extends Thread {
 
 public class Main {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         Counter counter = new Counter();
 
         Thread1 t1 = new Thread1();
