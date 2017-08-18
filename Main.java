@@ -1,55 +1,66 @@
 
-class A implements Runnable {
+class Counter {
+
+    private int c = 0;
+
+    public void inc() {
+        c++;
+    }
+
+    public void dec() {
+        c--;
+    }
+
+    public int getC() {
+        return c;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(c);
+    }
+}
+
+class Thread1 extends Thread {
+    Counter c;
 
     @Override
     public void run() {
-        System.out.println("Thread started working:::" + Thread.currentThread().getName());
-        try {
-            Thread.sleep(4000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println("Thread finished working:::" + Thread.currentThread().getName());
+        c.inc();
+    }
+
+    public void setC(Counter c) {
+        this.c = c;
+    }
+}
+
+class Thread2 extends Thread {
+    Counter c;
+
+    @Override
+    public void run() {
+        c.dec();
+    }
+
+    public void setC(Counter c) {
+        this.c = c;
     }
 }
 
 public class Main {
 
     public static void main(String[] args) throws InterruptedException {
-        Thread t1 = new Thread(new A(), "t1");
-        Thread t2 = new Thread(new A(), "t2");
-        Thread t3 = new Thread(new A(), "t3");
+        Counter counter = new Counter();
 
+        Thread1 t1 = new Thread1();
+        t1.setC(counter);
         t1.start();
 
-        // we start executing 2 thread after 2 sec waiting of 1 thread
-        try {
-            t1.join(2000); // main thread is waiting thread t1 2 sec
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
+        Thread2 t2 = new Thread2();
+        t2.setC(counter);
         t2.start();
 
-
-        try {
-            t1.join(); // main thread is waiting when t1 will be finished
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        t3.start();
-
-        // threads t1, t2, t3 will be finished before program (main thread) will be finished
-        try {
-            t1.join();
-            t2.join();
-            t3.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("All threads were executed!");
+        System.out.println(counter); // 0 -1 1 т.к. мы не знаем какой поток сработает раньше
 
     }
 
